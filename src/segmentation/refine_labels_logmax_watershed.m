@@ -39,6 +39,7 @@ for z = 1:Z
 
     % Regional maxima inside candidate mask
     seedMask = imregionalmax(imgSeed);
+    seedMask = filter_seeds_by_eccentricity(imgSeed, seedMask, params);
 
     % Suppress weak maxima
     localMaxVal = max(imgSeed(mask), [], 'all');

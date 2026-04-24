@@ -74,6 +74,9 @@ wsParams.logSigma = 1.5;
 wsParams.seedThresholdFactor = 0.35;
 wsParams.seedDilateRadius = 1;
 wsParams.distanceSmoothSigma = 1;
+wsParams.seedPatchRadius = 5;
+wsParams.maxSeedEccentricity = 0.85;
+wsParams.localThresholdFactor = 0.5;
 wsParams.verbose = true;
 
 params.refineMethod = "logmax";  % "hough" or "logmax"
