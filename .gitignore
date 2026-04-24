@@ -1,0 +1,12 @@
+# MATLAB autosave
+*.asv
+
+# Data (raw inputs)
+data/
+
+# Outputs (generated results)
+outputs/
+
+# OS junk
+.DS_Store
+Thumbs.db
