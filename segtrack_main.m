@@ -67,7 +67,7 @@ segParams.verbose = true;
 
 labelStack = segment_fibrils_basic(imgPre, segParams);
 
-%% 7. Refine Segmentation
+%% 7. Refine Segmentation using either LoG or Hough
 wsParams = struct();
 wsParams.logSize = 9;
 wsParams.logSigma = 1.5;
@@ -88,7 +88,13 @@ switch params.refineMethod
     otherwise
         error('Unknown refineMethod: %s', params.refineMethod);
 end
+%% 8. Re-refine based on neighborhood density
+nnParams = struct();
+nnParams.cutoffDist = 12;      % pixels
+nnParams.minNeighbors = 3;
+nnParams.verbose = true;
 
+[labelStackNN, neighborCounts] = refine_seg_nearest(labelStackSeeded, nnParams);
 %% Visual debug (outlines only)
 %Show segmentation overlays
 compare_label_outlines(imgPre, labelStack, labelStackSeeded);
