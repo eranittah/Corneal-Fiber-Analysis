@@ -69,14 +69,14 @@ labelStack = segment_fibrils_basic(imgPre, segParams);
 
 %% 7. Refine Segmentation
 wsParams = struct();
-wsParams.radiusRange = [4 8];
-wsParams.sensitivity = 0.96;
-wsParams.edgeThreshold = 0.05;
-wsParams.seedDiskRadius = 1;
+wsParams.logSize = 9;
+wsParams.logSigma = 1.5;
+wsParams.seedThresholdFactor = 0.35;
+wsParams.seedDilateRadius = 1;
 wsParams.distanceSmoothSigma = 1;
 wsParams.verbose = true;
 
-labelStackSeeded = refine_labels_hough_watershed(imgPre, labelStack, wsParams);
+labelStackSeeded = refine_labels_logmax_watershed(imgPre, labelStack, wsParams);
 %% Visual debug (outlines only)
 
 z = round(size(imgPre, 3) / 2);
