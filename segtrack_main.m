@@ -76,7 +76,19 @@ wsParams.seedDilateRadius = 1;
 wsParams.distanceSmoothSigma = 1;
 wsParams.verbose = true;
 
-labelStackSeeded = refine_labels_logmax_watershed(imgPre, labelStack, wsParams);
+params.refineMethod = "logmax";  % "hough" or "logmax"
+
+switch params.refineMethod
+    case "hough"
+        labelStackSeeded = refine_labels_hough_watershed(imgPre, labelStack, wsParams);
+
+    case "logmax"
+        labelStackSeeded = refine_labels_logmax_watershed(imgPre, labelStack, wsParams);
+
+    otherwise
+        error('Unknown refineMethod: %s', params.refineMethod);
+end
+
 %% Visual debug (outlines only)
 
 z = round(size(imgPre, 3) / 2);
@@ -126,12 +138,15 @@ tracks = [];
 if params.saveResults
     savePath = fullfile(outputDir, 'segtrack_main_results.mat');
 
+    refineMethod = params.refineMethod;
+
     save(savePath, ...
-        'params', ...
-        'imagePath', ...
-        'labelStack', ...
-        'tracks', ...
-        '-v7.3');
+    'params', ...
+    'imagePath', ...
+    'labelStack', ...
+    'labelStackSeeded', ...
+    'refineMethod', ...
+    '-v7.3');
 
     fprintf('Results saved to:\n%s\n', savePath);
 end
