@@ -68,13 +68,52 @@ segParams.verbose = true;
 labelStack = segment_fibrils_basic(imgPre, segParams);
 
 %% 7. Refine Segmentation
+wsParams = struct();
+wsParams.radiusRange = [4 8];
+wsParams.sensitivity = 0.96;
+wsParams.edgeThreshold = 0.05;
+wsParams.seedDiskRadius = 1;
+wsParams.distanceSmoothSigma = 1;
+wsParams.verbose = true;
 
+labelStackSeeded = refine_labels_hough_watershed(imgPre, labelStack, wsParams);
+%% Visual debug (outlines only)
+
+z = round(size(imgPre, 3) / 2);
+
+figure;
+
+% Binary masks
+bw1 = labelStack(:,:,z) > 0;
+bw2 = labelStackSeeded(:,:,z) > 0;
+
+% --- Original labels ---
+ax1 = subplot(1,3,1);
+imshow(imgPre(:,:,z), []);
+hold on;
+visboundaries(ax1, bw1, 'Color', 'r', 'LineWidth', 0.5);
+title('Original Labels');
+
+% --- Seeded / watershed labels ---
+ax2 = subplot(1,3,2);
+imshow(imgPre(:,:,z), []);
+hold on;
+visboundaries(ax2, bw2, 'Color', 'g', 'LineWidth', 0.5);
+title('Seeded + Watershed');
+
+% --- Seeded / watershed labels ---
+ax3 = subplot(1,3,3);
+imshow(imgPre(:,:,z), []);
+title('original');
+
+% Sync zoom/pan
+linkaxes([ax1, ax2,ax3], 'xy');
 % %% Visual debug
 % z = round(size(imgPre, 3) / 2);
 % figure;
 % imshow(imgPre(:,:,z), []);
 % hold on;
-% h = imshow(label2rgb(labelStack(:,:,z), 'jet', 'k', 'shuffle'));
+% h = imshow(label2rgb(labelStackSeeded(:,:,z), 'jet', 'k', 'shuffle'));
 % set(h, 'AlphaData', 0.3);
 % title('Overlay');
 %% 7. Track fibrils through slices
