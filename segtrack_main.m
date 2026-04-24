@@ -90,44 +90,11 @@ switch params.refineMethod
 end
 
 %% Visual debug (outlines only)
+%Show segmentation overlays
+compare_label_outlines(imgPre, labelStack, labelStackSeeded);
+% plot number of objects per-slice (evaluate noise)
+numObjs = plot_objects_per_slice(labelStackSeeded);
 
-z = round(size(imgPre, 3) / 2);
-
-figure;
-
-% Binary masks
-bw1 = labelStack(:,:,z) > 0;
-bw2 = labelStackSeeded(:,:,z) > 0;
-
-% --- Original labels ---
-ax1 = subplot(1,3,1);
-imshow(imgPre(:,:,z), []);
-hold on;
-visboundaries(ax1, bw1, 'Color', 'r', 'LineWidth', 0.5);
-title('Original Labels');
-
-% --- Seeded / watershed labels ---
-ax2 = subplot(1,3,2);
-imshow(imgPre(:,:,z), []);
-hold on;
-visboundaries(ax2, bw2, 'Color', 'g', 'LineWidth', 0.5);
-title('Seeded + Watershed');
-
-% --- Seeded / watershed labels ---
-ax3 = subplot(1,3,3);
-imshow(imgPre(:,:,z), []);
-title('original');
-
-% Sync zoom/pan
-linkaxes([ax1, ax2,ax3], 'xy');
-% %% Visual debug
-% z = round(size(imgPre, 3) / 2);
-% figure;
-% imshow(imgPre(:,:,z), []);
-% hold on;
-% h = imshow(label2rgb(labelStackSeeded(:,:,z), 'jet', 'k', 'shuffle'));
-% set(h, 'AlphaData', 0.3);
-% title('Overlay');
 %% 7. Track fibrils through slices
 
 % Placeholder for now
