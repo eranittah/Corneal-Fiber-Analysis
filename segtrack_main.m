@@ -93,7 +93,9 @@ end
 %Show segmentation overlays
 compare_label_outlines(imgPre, labelStack, labelStackSeeded);
 % plot number of objects per-slice (evaluate noise)
-numObjs = plot_objects_per_slice(labelStackSeeded);
+% numObjs = plot_objects_per_slice(labelStackSeeded);
+%check quality of overlaps
+% ovelapFrac = compute_slice_overlap(labelStackSeeded);
 
 %% 7. Track fibrils through slices
 
