@@ -90,14 +90,14 @@ switch params.refineMethod
 end
 %% 8. Re-refine based on neighborhood density
 nnParams = struct();
-nnParams.cutoffDist = 12;      % pixels
+nnParams.cutoffDist = 16;      % pixels
 nnParams.minNeighbors = 3;
 nnParams.verbose = true;
 
 [labelStackNN, neighborCounts] = refine_seg_nearest(labelStackSeeded, nnParams);
 %% Visual debug (outlines only)
 %Show segmentation overlays
-compare_label_outlines(imgPre, labelStack, labelStackSeeded);
+compare_label_outlines(imgPre, labelStackSeeded, labelStackNN);
 % plot number of objects per-slice (evaluate noise)
 % numObjs = plot_objects_per_slice(labelStackSeeded);
 %check quality of overlaps
