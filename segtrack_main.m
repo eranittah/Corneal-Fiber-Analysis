@@ -53,13 +53,30 @@ fprintf('Loaded stack size: %d x %d x %d\n', ...
 %% 5. Preprocess stack
 
 % Placeholder for now
-imgPre = imgStack;
+imgPre = imgaussfilt3(imgStack, [1 1 0.5]);
+imgPre = imgPre(:,:,200:300);
 
-%% 6. Segment fibrils
+%% 6. Preliminary fibril Segmentation
 
-% Placeholder for now
-labelStack = [];
+segParams.minArea = 5;
+segParams.logSize = 9;
+segParams.logSigma = 1.5;
+segParams.thresholdFactor = 1.25;
+segParams.closeRadius = 0;
+segParams.verbose = true;
 
+labelStack = segment_fibrils_basic(imgPre, segParams);
+
+%% 7. Refine Segmentation
+
+% %% Visual debug
+% z = round(size(imgPre, 3) / 2);
+% figure;
+% imshow(imgPre(:,:,z), []);
+% hold on;
+% h = imshow(label2rgb(labelStack(:,:,z), 'jet', 'k', 'shuffle'));
+% set(h, 'AlphaData', 0.3);
+% title('Overlay');
 %% 7. Track fibrils through slices
 
 % Placeholder for now
