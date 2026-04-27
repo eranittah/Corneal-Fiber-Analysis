@@ -37,9 +37,11 @@ minTrackLength = p.Results.MinTrackLength;
 % ----------------------------
 tracker = trackerGNN( ...
     'FilterInitializationFcn', @initFibrilFilter, ...
-    'AssignmentThreshold', assignmentThreshold, ...
-    'ConfirmationThreshold', confirmationThreshold, ...
-    'DeletionThreshold', deletionThreshold);
+    'AssignmentThreshold', 10, ...
+    'ConfirmationThreshold', [2 3], ...
+    'DeletionThreshold', [2 3], ...
+    'MaxNumTracks', 2000, ...
+    'MaxNumDetections', 1200);
 
 % Temporary history map
 trackHist = containers.Map('KeyType', 'double', 'ValueType', 'any');
@@ -47,8 +49,8 @@ trackHist = containers.Map('KeyType', 'double', 'ValueType', 'any');
 % ----------------------------
 % Run tracker slice by slice
 % ----------------------------
-for z = 1:numSlices
-
+for z = 1:2:numSlices
+tstart = tic;
     detections = makeDetectionsFromLabelSlice(labelStack(:,:,z), z);
 
     time = z;
@@ -84,6 +86,9 @@ for z = 1:numSlices
             trackHist(id) = newTrack;
         end
     end
+tend = toc;
+fprintf('Slice %d / %d | Detections: %d | Tracks: %d | Time: %.3f s\n', ...
+        z, numSlices, numel(detections), numel(confirmedTracks), tend);
 end
 
 % ----------------------------
