@@ -100,7 +100,9 @@ tracks = [];
 
 %% Visual debug (outlines only)
 %Show segmentation overlays
-compare_label_outlines(imgPre, labelStack, labelStackSeeded);
+% compare_label_outlines(imgPre, labelStack, labelStackSeeded);
+% View just filled labels
+view_label_overlay_filled(imgPre,labelStackSeeded);
 % plot number of objects per-slice (evaluate noise)
 % numObjs = plot_objects_per_slice(labelStackSeeded);
 %check quality of overlaps
