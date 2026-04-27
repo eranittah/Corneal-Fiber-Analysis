@@ -50,9 +50,11 @@ imgStack = loadTiffStack(imagePath);
 fprintf('Loaded stack size: %d x %d x %d\n', ...
     size(imgStack,1), size(imgStack,2), size(imgStack,3));
 
-%% 5. Preprocess stack
-
-% Placeholder for now
+%% 5. Preprocess stack & add hann window to abrupt masks
+% taperWidthPx = 5;
+% blackThreshold = 0;
+% [imgFeathered, softKeepMaskStack, inferredMaskStack] = featherBlackMaskedStack(imgStack, taperWidthPx, blackThreshold);
+%%
 imgPre = imgaussfilt3(imgStack, [1 1 0.5]);
 imgPre = imgPre(:,:,200:300);
 
@@ -67,7 +69,10 @@ segParams.verbose = true;
 
 labelStack = segment_fibrils_basic(imgPre, segParams);
 
-%% 7. Refine Segmentation using either LoG or Hough
+%% 7. initial label filtering of those at mask boundarys
+[labelClean, ~] = removeLabelsTouchingZero(imgPre, labelStack);
+
+%% 8. Refine Segmentation using either LoG or Hough
 wsParams = struct();
 wsParams.logSize = 9;
 wsParams.logSigma = 1.5;
@@ -80,21 +85,19 @@ params.refineMethod = "logmax";  % "hough" or "logmax"
 
 switch params.refineMethod
     case "hough"
-        labelStackSeeded = refine_labels_hough_watershed(imgPre, labelStack, wsParams);
+        labelStackSeeded = refine_labels_hough_watershed(imgPre, labelClean, wsParams);
 
     case "logmax"
-        labelStackSeeded = refine_labels_logmax_watershed(imgPre, labelStack, wsParams);
+        labelStackSeeded = refine_labels_logmax_watershed(imgPre, labelClean, wsParams);
 
     otherwise
         error('Unknown refineMethod: %s', params.refineMethod);
 end
-%% 8. Re-refine based on neighborhood density
-nnParams = struct();
-nnParams.cutoffDist = 12;      % pixels
-nnParams.minNeighbors = 3;
-nnParams.verbose = true;
+%% 7. Track fibrils through slices
 
-[labelStackNN, neighborCounts] = refine_seg_nearest(labelStackSeeded, nnParams);
+% Placeholder for now
+tracks = [];
+
 %% Visual debug (outlines only)
 %Show segmentation overlays
 compare_label_outlines(imgPre, labelStack, labelStackSeeded);
@@ -103,10 +106,6 @@ compare_label_outlines(imgPre, labelStack, labelStackSeeded);
 %check quality of overlaps
 % ovelapFrac = compute_slice_overlap(labelStackSeeded);
 
-%% 7. Track fibrils through slices
-
-% Placeholder for now
-tracks = [];
 
 %% 8. Save outputs
 

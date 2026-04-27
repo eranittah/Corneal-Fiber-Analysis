@@ -2,8 +2,8 @@ function compare_label_outlines(imgStack, labelStack1, labelStack2, zStart)
 % compare_label_outlines
 % Interactive 3-panel slice viewer:
 %   1. Raw image
-%   2. LabelStack1 outlines
-%   3. LabelStack2 outlines
+%   2. LabelStack1 outlines with unique color per label
+%   3. LabelStack2 outlines with unique color per label
 %
 % Keyboard controls:
 %   Right arrow / D : next slice
@@ -29,48 +29,74 @@ updateDisplay();
 
     function updateDisplay()
 
-    % Preserve current FOV if axes already contain an image
-    if ~isempty(ax0.Children)
-        xlimKeep = xlim(ax0);
-        ylimKeep = ylim(ax0);
-    else
-        xlimKeep = [];
-        ylimKeep = [];
+        % Preserve current FOV if axes already contain an image
+        if ~isempty(ax0.Children)
+            xlimKeep = xlim(ax0);
+            ylimKeep = ylim(ax0);
+        else
+            xlimKeep = [];
+            ylimKeep = [];
+        end
+
+        cla(ax0);
+        cla(ax1);
+        cla(ax2);
+
+        img = imgStack(:,:,z);
+        L1 = labelStack1(:,:,z);
+        L2 = labelStack2(:,:,z);
+
+        labels1 = unique(L1(:));
+        labels1(labels1 == 0) = [];
+
+        labels2 = unique(L2(:));
+        labels2(labels2 == 0) = [];
+
+        cmap1 = lines(max(numel(labels1), 1));
+        cmap2 = lines(max(numel(labels2), 1));
+
+        % Raw image
+        imshow(img, [], 'Parent', ax0);
+        title(ax0, sprintf('Raw | Slice %d/%d', z, Z));
+
+        % Label stack 1
+        imshow(img, [], 'Parent', ax1);
+        hold(ax1, 'on');
+
+        for i = 1:numel(labels1)
+            bw = (L1 == labels1(i));
+            visboundaries(ax1, bw, ...
+                'Color', cmap1(i,:), ...
+                'LineWidth', 0.5);
+        end
+
+        hold(ax1, 'off');
+        title(ax1, sprintf('Label Stack 1 | Slice %d/%d', z, Z));
+
+        % Label stack 2
+        imshow(img, [], 'Parent', ax2);
+        hold(ax2, 'on');
+
+        for i = 1:numel(labels2)
+            bw = (L2 == labels2(i));
+            visboundaries(ax2, bw, ...
+                'Color', cmap2(i,:), ...
+                'LineWidth', 0.5);
+        end
+
+        hold(ax2, 'off');
+        title(ax2, sprintf('Label Stack 2 | Slice %d/%d', z, Z));
+
+        linkaxes([ax0, ax1, ax2], 'xy');
+
+        % Restore previous zoom/pan view
+        if ~isempty(xlimKeep)
+            xlim(ax0, xlimKeep);
+            ylim(ax0, ylimKeep);
+        end
+
+        drawnow;
     end
-
-    cla(ax0);
-    cla(ax1);
-    cla(ax2);
-
-    bw1 = labelStack1(:,:,z) > 0;
-    bw2 = labelStack2(:,:,z) > 0;
-
-    % Raw
-    imshow(imgStack(:,:,z), [], 'Parent', ax0);
-    title(ax0, sprintf('Raw | Slice %d/%d', z, Z));
-
-    % Label stack 1
-    imshow(imgStack(:,:,z), [], 'Parent', ax1);
-    hold(ax1, 'on');
-    visboundaries(ax1, bw1, 'Color', 'r', 'LineWidth', 0.5);
-    title(ax1, sprintf('Label Stack 1 | Slice %d/%d', z, Z));
-
-    % Label stack 2
-    imshow(imgStack(:,:,z), [], 'Parent', ax2);
-    hold(ax2, 'on');
-    visboundaries(ax2, bw2, 'Color', 'g', 'LineWidth', 0.5);
-    title(ax2, sprintf('Label Stack 2 | Slice %d/%d', z, Z));
-
-    linkaxes([ax0, ax1, ax2], 'xy');
-
-    % Restore previous zoom/pan view
-    if ~isempty(xlimKeep)
-        xlim(ax0, xlimKeep);
-        ylim(ax0, ylimKeep);
-    end
-
-    drawnow;
-end
 
     function keyPress(~, event)
 
