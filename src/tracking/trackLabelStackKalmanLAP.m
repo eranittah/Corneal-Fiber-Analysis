@@ -19,11 +19,11 @@ function tracksOut = trackLabelStackKalmanLAP(labelStack, varargin)
 % ----------------------------
 p = inputParser;
 p.addRequired('labelStack', @(x) isnumeric(x) || islogical(x));
-p.addParameter('MaxDist', 8, @isnumeric);
-p.addParameter('MaxMissed', 2, @isnumeric);
-p.addParameter('MinTrackLength', 5, @isnumeric);
-p.addParameter('MeasurementNoise', 1, @isnumeric);
-p.addParameter('ProcessNoise', 0.5, @isnumeric);
+p.addParameter('MaxDist', 8, @isnumeric);% Gating radius
+p.addParameter('MaxMissed', 2, @isnumeric);%consecutive misses before track eliminated
+p.addParameter('MinTrackLength', 5, @isnumeric);%Minimum number of slices a track must span to be considered
+p.addParameter('MeasurementNoise', 0.6, @isnumeric);%uncertainty in centroid measurements
+p.addParameter('ProcessNoise', 0.3, @isnumeric);%Uncertainty in predicted position
 p.addParameter('Verbose', true, @islogical);
 p.parse(labelStack, varargin{:});
 
