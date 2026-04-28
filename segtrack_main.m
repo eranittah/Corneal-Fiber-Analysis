@@ -146,7 +146,12 @@ if params.saveResults
 
     fprintf('Results saved to:\n%s\n', savePath);
 end
-
+%% 9. Export any file
+exportTiffStack3D(skelStack, 'outputs/skeleton_stack.tif', ...
+    'PixelSizeXY', 3, ...
+    'PixelSizeZ', 3, ...
+    'Unit', 'nm', ...
+    'DataType', 'uint8');
 %% 9. Done
 
 fprintf('Pipeline complete.\n');
